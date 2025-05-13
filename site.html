@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jungle</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary-color: #1a5f9c;  /* Modern deep blue */
+            --secondary-color: #ffc107; /* Vibrant yellow accent */
+            --dark-color: #0d3b66;     /* Darker blue */
+            --light-color: #f8f9fa;    /* Light background */
+            --success-color: #28a745;  /* Green for success */
+            --danger-color: #dc3545;   /* Red for errors */
+            --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--light-color);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+        }
+        
+        .navbar {
+            background-color: rgba(255,255,255,0.95);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .navbar.scrolled {
+            background-color: rgba(255,255,255,0.98);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+        }
+        
+        .logo {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .nav-link {
+            color: var(--dark-color) !important;
+            font-weight: 500;
+            margin: 0 8px;
+            transition: all 0.3s;
+            position: relative;
+            padding: 8px 0;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--secondary-color);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            padding: 12px 24px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(26, 95, 156, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(26, 95, 156, 0.4);
+        }
+        
+        .btn-accent {
+            background-color: var(--secondary-color);
+            color: #333;
+            font-weight: 600;
+            padding: 12px 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+        }
+        
+        .btn-accent:hover {
+            background-color: #e0a800;
+            color: #333;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
+        }
+        
+        .hero {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 120px 0 100px;
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+            margin-bottom: -50px;
+        }
+        
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNwYXR0ZXJuKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg==');
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero-image {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            transform: perspective(1000px) rotateY(-10deg);
+            transition: transform 0.5s ease;
+        }
+        
+        .hero-image:hover {
+            transform: perspective(1000px) rotateY(0deg);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            position: relative;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background-color: var(--secondary-color);
+            border-radius: 2px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            height: 100%;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 0;
+            background: var(--secondary-color);
+            transition: height 0.4s ease;
+        }
+        
+        .feature-card:hover::before {
+            height: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1);
+        }
+        
+        .stats-section {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 80px 0;
+            position: relative;
+            clip-path: polygon(0 10%, 100% 0, 100% 90%, 0 100%);
+            margin: 80px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, white, #f8f9fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 80px 0 30px;
+            margin-top: auto;
+            clip-path: polygon(0 5%, 100% 0, 100% 100%, 0 100%);
+        }
+        
+        .footer-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.3s;
+            display: block;
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 15px;
+        }
+        
+        .footer-links a::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            padding-left: 20px;
+        }
+        
+        .footer-links a:hover::before {
+            opacity: 1;
+            left: 5px;
+        }
+        
+        .social-icons a {
+            color: white;
+            background-color: rgba(255,255,255,0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            transition: all 0.3s;
+        }
+        
+        .social-icons a:hover {
+            background-color: var(--secondary-color);
+            color: #333;
+            transform: translateY(-5px);
+        }
+        
+        .copyright {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+            margin-top: 50px;
+        }
+        
+        /* Blog Section */
+        .blog-section {
+            padding: 100px 0;
+            background-color: white;
+        }
+        
+        .blog-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+            background: white;
+        }
+        
+        .blog-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+        
+        .blog-img {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+        
+        .blog-body {
+            padding: 25px;
+        }
+        
+        .blog-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+        
+        .blog-meta {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .read-more {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .read-more i {
+            margin-left: 5px;
+            transition: transform 0.3s;
+        }
+        
+        .read-more:hover i {
+            transform: translateX(5px);
+        }
+        
+        /* History Timeline */
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 0;
+        }
+        
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background-color: var(--secondary-color);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -2px;
+        }
+        
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+            box-sizing: border-box;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border: 4px solid var(--secondary-color);
+            border-radius: 50%;
+            top: 15px;
+            z-index: 1;
+        }
+        
+        .left {
+            left: 0;
+        }
+        
+        .right {
+            left: 50%;
+        }
+        
+        .left::after {
+            right: -12px;
+        }
+        
+        .right::after {
+            left: -12px;
+        }
+        
+        .timeline-content {
+            padding: 20px 30px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .timeline-year {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        /* Interactive Map */
+        .map-container {
+            height: 500px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .map-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        /* Testimonials */
+        .testimonial-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            margin: 15px;
+            position: relative;
+        }
+        
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 5rem;
+            color: rgba(26, 95, 156, 0.1);
+            font-family: Georgia, serif;
+            line-height: 1;
+        }
+        
+        .testimonial-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 3px solid var(--secondary-color);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .hero {
+                padding: 100px 0 80px;
+                clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
+            }
+            
+            .timeline::after {
+                left: 31px;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            
+            .timeline-item::after {
+                left: 19px;
+            }
+            
+            .left::after, .right::after {
+                left: 19px;
+            }
+            
+            .right {
+                left: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero {
+                padding: 80px 0 60px;
+                text-align: center;
+            }
+            
+            .hero-image {
+                margin-top: 30px;
+                transform: none;
+            }
+            
+            .hero-image:hover {
+                transform: none;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+                text-align: center;
+            }
+            
+            .section-title::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .stats-section {
+                clip-path: polygon(0 5%, 100% 0, 100% 95%, 0 100%);
+            }
+        }
+        
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjMWE1ZjljIiBkPSJNMjU2IDhDMTE5IDggOCAxMTkgOCAyNTZzMTExIDI0OCAyNDggMjQ4IDI0OC0xMTEgMjQ4LTI0OFMzOTMgOCAyNTYgOHptMCA0NDhjLTExMC41IDAtMjAwLTg5LjUtMjAwLTIwMFMxNDUuNSA1NiAyNTYgNTZzMjAwIDg5LjUgMjAwIDIwMC04OS41IDIwMC0yMDAgMjAwem0zMi0zMTJ2LTMyaDY0djMySDEyOHY2NGgyNTZ2LTY0aC05NnptMCAxMjhoLTY0djMyaDY0di0zMnptLTk2IDB2LTMyaDY0djMyaC02NHptLTMyLTMyaDMydjMyaC0zMnYtMzJ6Ii8+PC9zdmc+" class="logo" alt="BODDA Logo">
+                JUNGLE
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#membership">Membership</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#blog">Blog</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-accent" href="login.html">Member Portal</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="row align-items-center hero-content">
+                <div class="col-lg-6 animate__animated animate__fadeInLeft">
+                    <h1 class="display-4 fw-bold mb-4">Empowering Kenya's Digital Boda Economy</h1>
+                    <p class="lead mb-4">The premier association for motorcycle taxi and delivery riders, providing technology solutions, advocacy, and support services to over 50,000 members nationwide.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#membership" class="btn btn-primary btn-lg pulse">Join Our Community</a>
+                        <a href="#about" class="btn btn-outline-light btn-lg">Learn More</a>
+                    </div>
+                    <div class="d-flex mt-4">
+                        <div class="me-4">
+                            <h3 class="fw-bold">50K+</h3>
+                            <p>Members</p>
+                        </div>
+                        <div class="me-4">
+                            <h3 class="fw-bold">47</h3>
+                            <p>Counties</p>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold">24/7</h3>
+                            <p>Support</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-none d-lg-block animate__animated animate__fadeInRight">
+                    <div class="hero-image">
+                        <img src="https://images.unsplash.com/photo-1601584115197-04ecc0da31e8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="img-fluid" alt="Boda boda riders">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="py-5 bg-light" id="about">
+        <div class="container py-5">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0">
+                    <h2 class="section-title">About BODDA</h2>
+                    <p class="lead">The Digital Boda Drivers and Deliveries Association (BODDA) is revolutionizing Kenya's transport sector through technology and collective action.</p>
+                    <p>Founded in 2020, we've grown to become the largest and most influential boda boda association in Kenya, representing riders across all 47 counties. Our mission is to professionalize the sector, improve working conditions, and leverage digital solutions to increase earnings and safety.</p>
+                    <div class="row mt-4">
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
+                                    <i class="fas fa-shield-alt text-primary fs-4"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">Safety First</h5>
+                                    <small>Comprehensive rider protection</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
+                                    <i class="fas fa-chart-line text-primary fs-4"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">Growth Focused</h5>
+                                    <small>Increasing your earnings</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
+                                    <i class="fas fa-users text-primary fs-4"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">Community</h5>
+                                    <small>50,000+ strong network</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
+                                    <i class="fas fa-mobile-alt text-primary fs-4"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">Digital Tools</h5>
+                                    <small>Cutting-edge technology</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm overflow-hidden">
+                        <div class="row g-0">
+                            <div class="col-md-6">
+                                <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" class="img-fluid h-100" style="object-fit: cover;" alt="Boda rider">
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card-body p-4">
+                                    <h4 class="mb-3">Why Choose BODDA?</h4>
+                                    <div class="d-flex mb-3">
+                                        <div class="me-3 text-primary">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div>
+                                            <p class="mb-0">Industry-leading insurance packages</p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex mb-3">
+                                        <div class="me-3 text-primary">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div>
+                                            <p class="mb-0">Exclusive rider app with real-time analytics</p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex mb-3">
+                                        <div class="me-3 text-primary">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div>
+                                            <p class="mb-0">Negotiated discounts with partners</p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex mb-3">
+                                        <div class="me-3 text-primary">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div>
+                                            <p class="mb-0">Regular skills development training</p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex">
+                                        <div class="me-3 text-primary">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div>
+                                            <p class="mb-0">24/7 emergency support services</p>
+                                        </div>
+                                    </div>
+                                    <a href="#" class="btn btn-primary mt-4 w-100">Learn More</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="py-5" id="services">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Our Services</h2>
+                <p class="lead">Comprehensive solutions designed for boda boda professionals</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Insurance Coverage</h3>
+                        <p>Affordable comprehensive insurance packages tailored for riders, including medical, liability and asset protection with quick claims processing.</p>
+                        <a href="#" class="text-primary text-decoration-none fw-bold">Learn more →</a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>Digital Platform</h3>
+                        <p>Exclusive access to our rider app with features like trip tracking, earnings management, safety alerts, and real-time market data.</p>
+                        <a href="#" class="text-primary text-decoration-none fw-bold">Learn more →</a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3>Training Programs</h3>
+                        <p>Regular training on road safety, customer service, financial literacy, motorcycle maintenance, and digital skills.</p>
+                        <a href="#" class="text-primary text-decoration-none fw-bold">Learn more →</a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <h3>Collective Bargaining</h3>
+                        <p>Negotiating better terms with ride-hailing platforms, fuel stations, spare parts dealers and financial institutions.</p>
+                        <a href="#" class="text-primary text-decoration-none fw-bold">Learn more →</a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-ambulance"></i>
+                        </div>
+                        <h3>Emergency Support</h3>
+                        <p>24/7 emergency response team, legal assistance, and medical support for members involved in accidents or disputes.</p>
+                        <a href="#" class="text-primary text-decoration-none fw-bold">Learn more →</a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <h3>Member Discounts</h3>
+                        <p>Exclusive discounts on spare parts, fuel, maintenance services, mobile data, and other essential products.</p>
+                        <a href="#" class="text-primary text-decoration-none fw-bold">Learn more →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Membership Section -->
+    <section class="py-5 bg-light" id="membership">
+        <div class="container py-5">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0">
+                    <h2 class="section-title">Join BODDA Today</h2>
+                    <p class="lead">Become part of Kenya's most progressive riders' association</p>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6 mb-4">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-4">
+                                    <h4 class="text-primary">Basic Membership</h4>
+                                    <h2 class="my-3">KSh 200<span class="text-muted fs-6">/month</span></h2>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Membership card</li>
+                                        <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Access to discounts</li>
+                                        <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Basic insurance</li>
+                                        <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Training access</li>
+                                    </ul>
+                                    <a href="signup.html" class="btn btn-outline-primary w-100 mt-3">Choose Plan</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-4">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h4 class="text-primary">Premium Membership</h4>
+                                            <h2 class="my-3">KSh 500<span class="text-muted fs-6">/month</span></h2>
+                                        </div>
+                                        <span class="badge bg-secondary">Most Popular</span>
+                                    </div>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> All Basic benefits</li>
+                                        <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Comprehensive insurance</li>
+                                        <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Priority support</li>
+                                        <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Advanced training</li>
+                                        <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Emergency services</li>
+                                    </ul>
+                                    <a href="signup.html" class="btn btn-primary w-100 mt-3">Choose Plan</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm overflow-hidden">
+                        <div class="card-body p-5">
+                            <h3 class="mb-4">Membership Benefits</h3>
+                            <div class="d-flex mb-4">
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-4">
+                                    <i class="fas fa-medal text-primary fs-4"></i>
+                                </div>
+                                <div>
+                                    <h5>Professional Recognition</h5>
+                                    <p class="mb-0">Gain official recognition as a professional rider with our certified membership program.</p>
+                                </div>
+                            </div>
+                            <div class="d-flex mb-4">
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-4">
+                                    <i class="fas fa-chart-pie text-primary fs-4"></i>
+                                </div>
+                                <div>
+                                    <h5>Increased Earnings</h5>
+                                    <p class="mb-0">Access to exclusive delivery contracts and passenger referrals through our network.</p>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-4">
+                                    <i class="fas fa-users text-primary fs-4"></i>
+                                </div>
+                                <div>
+                                    <h5>Community Support</h5>
+                                    <p class="mb-0">Join a supportive community of riders with local chapters across all 47 counties.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section text-white">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-md-3 mb-5 mb-md-0">
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="50000">0</div>
+                        <p>Registered Members</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-5 mb-md-0">
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="47">0</div>
+                        <p>Counties Covered</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-5 mb-md-0">
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="15">0</div>
+                        <p>Partner Organizations</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <p>Member Support</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section class="blog-section py-5" id="blog">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Boda Boda Insights</h2>
+                <p class="lead">Latest news and stories from our community</p>
+            </div>
+            
+            <div class="row mb-5">
+                <div class="col-md-4 mb-4">
+                    <div class="blog-card">
+                        <img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" class="blog-img" alt="Boda boda history">
+                        <div class="blog-body">
+                            <span class="badge bg-primary mb-2">History</span>
+                            <h4 class="blog-title">The Evolution of Boda Boda in Kenya</h4>
+                            <div class="blog-meta">
+                                <small><i class="far fa-calendar-alt me-2"></i>June 15, 2023</small>
+                                <small class="ms-3"><i class="far fa-comment me-2"></i>24 Comments</small>
+                            </div>
+                            <p>Explore how motorcycle taxis became Kenya's most popular mode of transport and a vital part of the economy.</p>
+                            <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="blog-card">
+                        <img src="https://images.unsplash.com/photo-1601584115169-599ebd574b53?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" class="blog-img" alt="Safety training">
+                        <div class="blog-body">
+                            <span class="badge bg-success mb-2">Safety</span>
+                            <h4 class="blog-title">New Safety Initiatives for Riders</h4>
+                            <div class="blog-meta">
+                                <small><i class="far fa-calendar-alt me-2"></i>May 28, 2023</small>
+                                <small class="ms-3"><i class="far fa-comment me-2"></i>18 Comments</small>
+                            </div>
+                            <p>BODDA launches nationwide safety training program in partnership with NTSA and Red Cross.</p>
+                            <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="blog-card">
+                        <img src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" class="blog-img" alt="Digital payments">
+                        <div class="blog-body">
+                            <span class="badge bg-warning mb-2">Technology</span>
+                            <h4 class="blog-title">Digital Payments Transforming the Industry</h4>
+                            <div class="blog-meta">
+                                <small><i class="far fa-calendar-alt me-2"></i>April 10, 2023</small>
+                                <small class="ms-3"><i class="far fa-comment me-2"></i>32 Comments</small>
+                            </div>
+                            <p>How mobile money and digital platforms are increasing earnings and reducing risks for riders.</p>
+                            <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <a href="#" class="btn btn-outline-primary btn-lg">View All Articles</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- History Timeline Section -->
+    <section class="py-5 bg-light">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h2 class="section-title">The Boda Boda Journey</h2>
+                <p class="lead">A timeline of motorcycle transport in Kenya</p>
+            </div>
+            
+            <div class="timeline">
+                <div class="timeline-item left">
+                    <div class="timeline-content animate__animated animate__fadeIn">
+                        <div class="timeline-year">1960s</div>
+                        <h4>Origins at the Border</h4>
+                        <p>The term "boda boda" originated from bicycle taxis operating at the Kenya-Uganda border, transporting people between border posts ("border-to-border").</p>
+                    </div>
+                </div>
+                <div class="timeline-item right">
+                    <div class="timeline-content animate__animated animate__fadeIn">
+                        <div class="timeline-year">1990s</div>
+                        <h4>Motorcycle Adoption</h4>
+                        <p>Bicycles began being replaced with motorcycles, offering faster transport. The industry grew rapidly in urban and rural areas as an affordable alternative to matatus.</p>
+                    </div>
+                </div>
+                <div class="timeline-item left">
+                    <div class="timeline-content animate__animated animate__fadeIn">
+                        <div class="timeline-year">2000s</div>
+                        <h4>National Phenomenon</h4>
+                        <p>Boda bodas became ubiquitous across Kenya, serving as vital transport in areas with poor road infrastructure. The sector became a major employer of youth.</p>
+                    </div>
+                </div>
+                <div class="timeline-item right">
+                    <div class="timeline-content animate__animated animate__fadeIn">
+                        <div class="timeline-year">2010s</div>
+                        <h4>Digital Transformation</h4>
+                        <p>Ride-hailing apps like UberBoda and Bolt entered the market, bringing digital dispatch and cashless payments to the industry.</p>
+                    </div>
+                </div>
+                <div class="timeline-item left">
+                    <div class="timeline-content animate__animated animate__fadeIn">
+                        <div class="timeline-year">2020</div>
+                        <h4>BODDA Formation</h4>
+                        <p>The Digital Boda Drivers and Deliveries Association was founded to represent riders' interests and professionalize the sector through technology and advocacy.</p>
+                    </div>
+                </div>
+                <div class="timeline-item right">
+                    <div class="timeline-content animate__animated animate__fadeIn">
+                        <div class="timeline-year">Present</div>
+                        <h4>Economic Powerhouse</h4>
+                        <p>With over 1.2 million riders, the boda boda sector contributes significantly to Kenya's GDP and serves as a critical last-mile delivery solution.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-5">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Member Stories</h2>
+                <p class="lead">What our members say about BODDA</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="testimonial-card h-100">
+                        <div class="testimonial-content">
+                            <div class="mb-3">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                            </div>
+                            <p class="mb-4">"Since joining BODDA, my daily earnings have increased by 40% through their training and the rider app. The insurance saved me when I had an accident last year."</p>
+                            <div class="testimonial-author">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" class="author-avatar" alt="John Mwangi">
+                                <div>
+                                    <h6 class="mb-0">John Mwangi</h6>
+                                    <small>Nairobi Rider since 2018</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="testimonial-card h-100">
+                        <div class="testimonial-content">
+                            <div class="mb-3">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                            </div>
+                            <p class="mb-4">"The collective bargaining power of BODDA got us better rates with delivery platforms. I now earn more for the same work and have health insurance for my family."</p>
+                            <div class="testimonial-author">
+                                <img src="https://randomuser.me/api/portraits/women/44.jpg" class="author-avatar" alt="Grace Atieno">
+                                <div>
+                                    <h6 class="mb-0">Grace Atieno</h6>
+                                    <small>Kisumu Rider since 2019</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="testimonial-card h-100">
+                        <div class="testimonial-content">
+                            <div class="mb-3">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star-half-alt text-warning"></i>
+                            </div>
+                            <p class="mb-4">"BODDA's emergency support helped me when I was unfairly arrested. Their lawyers got me released quickly. The training also made me a better, safer rider."</p>
+                            <div class="testimonial-author">
+                                <img src="https://randomuser.me/api/portraits/men/75.jpg" class="author-avatar" alt="Paul Omondi">
+                                <div>
+                                    <h6 class="mb-0">Paul Omondi</h6>
+                                    <small>Mombasa Rider since 2020</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section class="py-5 bg-light">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Our Nationwide Network</h2>
+                <p class="lead">BODDA members and offices across Kenya</p>
+            </div>
+            
+            <div class="map-container">
+                <img src="https://images.unsplash.com/photo-1582568888741-8b535a1d8c8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80" class="img-fluid h-100 w-100" style="object-fit: cover;" alt="Kenya map">
+                <div class="map-overlay">
+                    <h5 class="mb-3">Find Your Nearest Office</h5>
+                    <div class="input-group mb-3">
+                        <select class="form-select">
+                            <option selected>Select County</option>
+                            <option>Nairobi</option>
+                            <option>Mombasa</option>
+                            <option>Kisumu</option>
+                            <option>Nakuru</option>
+                            <option>Eldoret</option>
+                        </select>
+                        <button class="btn btn-primary" type="button">Search</button>
+                    </div>
+                    <small class="text-muted">47 county offices nationwide</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-5" id="contact">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Contact Us</h2>
+                <p class="lead">Get in touch with BODDA leadership</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <h3 class="h4 mb-4">Headquarters</h3>
+                            <ul class="list-unstyled">
+                                <li class="mb-3"><i class="fas fa-map-marker-alt text-primary me-2"></i> BODDA Plaza, Moi Avenue, Nairobi</li>
+                                <li class="mb-3"><i class="fas fa-phone-alt text-primary me-2"></i> +254 700 123 456</li>
+                                <li class="mb-3"><i class="fas fa-envelope text-primary me-2"></i> info@bodda.co.ke</li>
+                                <li class="mb-3"><i class="fas fa-clock text-primary me-2"></i> Mon-Fri: 8:00 AM - 5:00 PM</li>
+                                <li class="mb-3"><i class="fas fa-headset text-primary me-2"></i> Emergency: +254 733 123 456</li>
+                            </ul>
+                            <div class="mt-4">
+                                <h4 class="h5">Follow Us</h4>
+                                <div class="social-icons mt-3">
+                                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                                    <a href="#"><i class="fab fa-twitter"></i></a>
+                                    <a href="#"><i class="fab fa-instagram"></i></a>
+                                    <a href="#"><i class="fab fa-youtube"></i></a>
+                                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <h3 class="h4 mb-4">Send Us a Message</h3>
+                            <form>
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Your Name</label>
+                                    <input type="text" class="form-control" id="name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="subject" class="form-label">Subject</label>
+                                    <input type="text" class="form-control" id="subject" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="message" class="form-label">Message</label>
+                                    <textarea class="form-control" id="message" rows="4" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Send Message</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h3 class="text-white mb-4">JUNGLE</h3>
+                    <p>Digital Boda Drivers and Deliveries Association of Kenya - Empowering riders through unity, technology and advocacy.</p>
+                    <div class="social-icons mt-4">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4">
+                    <h4 class="text-white mb-4">Quick Links</h4>
+                    <div class="footer-links">
+                        <a href="#home">Home</a>
+                        <a href="#about">About Us</a>
+                        <a href="#services">Services</a>
+                        <a href="#membership">Membership</a>
+                        <a href="#blog">Blog</a>
+                        <a href="#contact">Contact</a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4">
+                    <h4 class="text-white mb-4">Services</h4>
+                    <div class="footer-links">
+                        <a href="#">Insurance Coverage</a>
+                        <a href="#">Digital Platform</a>
+                        <a href="#">Training Programs</a>
+                        <a href="#">Emergency Support</a>
+                        <a href="#">Member Discounts</a>
+                        <a href="#">Collective Bargaining</a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4">
+                    <h4 class="text-white mb-4">Newsletter</h4>
+                    <p>Subscribe to get updates on our activities and member benefits.</p>
+                    <form class="mt-3">
+                        <div class="input-group mb-3">
+                            <input type="email" class="form-control" placeholder="Your Email" required>
+                            <button class="btn btn-accent" type="submit">Subscribe</button>
+                        </div>
+                    </form>
+                    <div class="mt-4">
+                        <h5 class="text-white mb-3">Download Our App</h5>
+                        <div class="d-flex">
+                            <a href="#" class="me-2">
+                                <img src="https://via.placeholder.com/120x40/1a5f9c/ffffff?text=App+Store" alt="App Store" class="img-fluid rounded" style="height: 40px;">
+                            </a>
+                            <a href="#">
+                                <img src="https://via.placeholder.com/120x40/1a5f9c/ffffff?text=Play+Store" alt="Play Store" class="img-fluid rounded" style="height: 40px;">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright text-center">
+                <p class="mb-0">&copy; 2025 All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Navbar background change on scroll
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Counter animation for stats
+        const counters = document.querySelectorAll('.stat-number');
+        const speed = 200;
+        
+        function animateCounters() {
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-count');
+                const count = +counter.innerText;
+                const increment = target / speed;
+                
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + increment);
+                    setTimeout(animateCounters, 1);
+                } else {
+                    counter.innerText = target;
+                }
+            });
+        }
+        
+        // Only start counting when stats section is in view
+        const statsSection = document.querySelector('.stats-section');
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                animateCounters();
+                observer.unobserve(statsSection);
+            }
+        }, { threshold: 0.5 });
+        
+        observer.observe(statsSection);
+
+        // Animate timeline items when they come into view
+        const timelineItems = document.querySelectorAll('.timeline-content');
+        
+        const timelineObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate__fadeIn');
+                    timelineObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        timelineItems.forEach(item => {
+            timelineObserver.observe(item);
+        });
+
+        // Add animation to feature cards on scroll
+        const featureCards = document.querySelectorAll('.feature-card');
+        
+        const featureObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+                    featureObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        featureCards.forEach(card => {
+            featureObserver.observe(card);
+        });
+    </script>
+</body>
+</html>

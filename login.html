@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #1a237e;
+            --light-blue: #534bae;
+            --dark-blue: #000051;
+            --primary-gold: #ffd700;
+            --light-gold: #ffff52;
+            --dark-gold: #c7a600;
+
+            /* For compatibility with original BODDA JS that might use these for Bootstrap alert types */
+            --success-color: #99ff99; /* Text color for success */
+            --danger-color: #ff9999;  /* Text color for error */
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: white; /* Default text color */
+            align-items: center; /* Center auth container */
+            padding-top: 70px; /* Space for fixed navbar */
+        }
+        
+        .navbar {
+            background-color: var(--dark-blue) !important; /* Override Bootstrap */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            border-bottom: 1px solid var(--primary-gold);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1050;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-gold) !important;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            height: 40px;
+            margin-right: 10px;
+        }
+        .logo path {
+            fill: var(--primary-gold); /* Change SVG color */
+        }
+
+        .nav-link {
+            color: var(--light-gold) !important;
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-gold) !important;
+            text-shadow: 0 0 5px var(--primary-gold);
+        }
+        .navbar-toggler {
+            border-color: var(--primary-gold);
+        }
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 215, 0, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+        }
+        
+        .auth-container-wrapper { /* New wrapper to center content like the Blue & Gold example */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1; /* Takes up remaining space to push footer down */
+            width: 100%;
+            padding: 2rem 0; /* Add some padding */
+        }
+
+        .auth-container { /* Original BODDA container, now child of wrapper */
+            max-width: 500px;
+            width: 100%;
+            /* margin: auto; */ /* Removed, handled by wrapper */
+            /* padding: 2rem; */ /* Moved to wrapper or card */
+            /* flex: 1; */ /* Removed, handled by wrapper */
+            /* display: flex; */ /* Removed */
+            /* align-items: center; */ /* Removed */
+        }
+        
+        .auth-card {
+            background-color: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--primary-gold);
+            width: 100%;
+            overflow: hidden; /* Keep child elements within rounded borders */
+            padding: 30px; /* Unified padding */
+        }
+        
+        .auth-header {
+            /* background-color: transparent; */ /* No separate background for header */
+            color: white;
+            /* padding: 1.5rem; */ /* Adjusted by main card padding */
+            padding-bottom: 1rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+            margin-bottom: 1.5rem;
+        }
+        .auth-header h2 {
+            color: var(--primary-gold);
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+        }
+        .auth-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+        
+        .auth-body {
+            /* padding: 2rem; */ /* Handled by main card padding */
+            background-color: transparent;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--primary-gold);
+        }
+
+        .form-control, .otp-input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus, .otp-input:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+            background-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .btn-primary { /* Main action button */
+            width: 100%;
+            padding: 12px; /* Adjusted from 14px for consistency */
+            border: none;
+            border-radius: 8px;
+            background-color: var(--primary-gold) !important; /* Override Bootstrap */
+            color: var(--primary-blue) !important; /* Override Bootstrap */
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px; /* From Blue & Gold button */
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--light-gold) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        .btn-primary:disabled { /* Ensure disabled state is clear */
+            background-color: var(--dark-gold) !important;
+            color: rgba(26, 35, 126, 0.7) !important;
+            cursor: not-allowed;
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%; /* Relative to label + input combo */
+            transform: translateY(calc(-50% + 10px)); /* Adjust based on label presence */
+            cursor: pointer;
+            color: var(--primary-gold); /* var(--light-gold) */
+            transition: color 0.3s;
+        }
+         .form-label + .form-control + .password-toggle { /* If no label, or want it relative to input height only */
+             top: 50%;
+             transform: translateY(-50%);
+         }
+        .password-toggle:hover {
+            color: var(--light-gold);
+        }
+        
+        .password-requirements {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 0.5rem;
+        }
+        
+        .otp-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        
+        .otp-input {
+            width: 48px; /* Adjusted from 50px */
+            height: 56px; /* Adjusted from 60px */
+            text-align: center;
+            font-size: 1.5rem;
+            margin: 0 3px; /* From Blue & Gold otp-input */
+        }
+        
+        .countdown {
+            color: var(--primary-gold);
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-placeholder { /* Used by JS to inject status messages */
+            margin-top: 15px;
+            text-align: center;
+        }
+        .status-message {
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            display: none; /* Hidden by default, shown by JS */
+        }
+        .status-message.error {
+            background-color: rgba(255, 0, 0, 0.15);
+            border: 1px solid rgba(255, 0, 0, 0.25);
+            color: #ff9999; /* var(--danger-color) */
+            display: block;
+        }
+        .status-message.success {
+            background-color: rgba(0, 255, 0, 0.15);
+            border: 1px solid rgba(0, 255, 0, 0.25);
+            color: #99ff99; /* var(--success-color) */
+            display: block;
+        }
+        .status-message.info { /* For neutral messages like "Verifying..." */
+            background-color: rgba(0, 191, 255, 0.15);
+            border: 1px solid rgba(0, 191, 255, 0.25);
+            color: #99ccff;
+            display: block;
+        }
+
+        a {
+            color: var(--primary-gold);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        a:hover {
+            text-decoration: underline;
+            color: var(--light-gold);
+        }
+        .text-center p {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        footer {
+            background-color: var(--dark-blue);
+            color: var(--light-gold);
+            padding: 20px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 1px solid var(--primary-gold);
+            width: 100%;
+        }
+        
+        @media (max-width: 576px) {
+            body { padding-top: 56px; } /* Adjust for smaller navbar */
+            .auth-container-wrapper { padding: 1rem 0; }
+            .auth-card { padding: 20px; }
+            .auth-header { padding-bottom: 0.8rem; margin-bottom: 1rem;}
+            .otp-input {
+                width: 38px;
+                height: 48px;
+                font-size: 1.2rem;
+            }
+            .password-toggle {
+                transform: translateY(calc(-50% + 8px));
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="site.html">
+                <svg class="logo" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200zm32-312v-32h64v32H128v64h256v-64h-96zm0 128h-64v32h64v-32zm-96 0v-32h64v32h-64zm-32-32h32v32h-32v-32z"/>
+                </svg>
+                JUNGLE
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="site.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="site.html#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="site.html#services">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="signup.html#membership">Membership</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="login.html">Member Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="auth-container-wrapper">
+        <div class="auth-container">
+            <div class="auth-card" id="loginCard">
+                <div class="auth-header">
+                    <h2>Member Login</h2>
+                    <p>Welcome Back</p>
+                </div>
+                <div class="auth-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="loginId" class="form-label">Email or Phone Number</label>
+                            <input type="text" class="form-control" id="loginId" placeholder="Enter email or phone" required>
+                        </div>
+                        <div class="mb-3 password-container">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" placeholder="Enter password" required>
+                            <span class="password-toggle" id="togglePassword"><i class="fas fa-eye"></i></span>
+                            <div class="password-requirements">Must be at least 8 characters with uppercase, lowercase, number, and symbol</div>
+                        </div>
+                        <div class="d-grid gap-2 mb-3">
+                            <button type="submit" class="btn btn-primary" id="loginBtn">
+                                <span id="loginBtnText">Continue</span>
+                                <div class="spinner-border spinner-border-sm text-light d-none" id="loginSpinner"></div>
+                            </button>
+                        </div>
+                        <div class="text-center mb-3">
+                            <a href="#" id="forgotPasswordLink">Password Reset</a>
+                        </div>
+                        <div class="text-center">
+                            <p>Not a member? <a href="signup.html#membership">Register</a></p>
+                        </div>
+                    </form>
+                    <div class="alert-placeholder" id="loginAlertPlaceholder"></div>
+                </div>
+            </div>
+
+            <div class="auth-card d-none" id="otpCard">
+                <div class="auth-header">
+                    <h2>OTP Verification</h2>
+                    <p>Enter the 6-digit code sent to you</p>
+                </div>
+                <div class="auth-body">
+                    <div class="countdown" id="otpCountdown">05:00</div>
+                    <form id="otpForm">
+                        <div class="otp-container">
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]">
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]">
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]">
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]">
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]">
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]">
+                        </div>
+                        <input type="hidden" id="otpCode">
+                        <div class="d-grid gap-2 mb-3">
+                            <button type="submit" class="btn btn-primary" id="verifyOtpBtn">
+                                <span id="verifyOtpBtnText">Verify OTP</span>
+                                <div class="spinner-border spinner-border-sm text-light d-none" id="verifyOtpSpinner"></div>
+                            </button>
+                        </div>
+                        <div class="text-center">
+                            <p>Didn't receive code? <a href="#" id="resendOtpLink">Resend OTP</a></p>
+                        </div>
+                    </form>
+                    <div class="alert-placeholder" id="otpAlertPlaceholder"></div>
+                </div>
+            </div>
+
+            <div class="auth-card d-none" id="forgotPasswordCard">
+                <div class="auth-header">
+                    <h2>Reset Password</h2>
+                    <p>Verify your account to receive a reset link</p>
+                </div>
+                <div class="auth-body">
+                    <form id="forgotPasswordForm">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" placeholder="Enter your phone number" required>
+                            <div class="form-text" style="color: rgba(255,255,255,0.6); font-size: 0.8rem;">Format: 07xxxxxxxx (no spaces or special characters)</div>
+                        </div>
+                        <div class="d-grid gap-2 mb-3">
+                            <button type="submit" class="btn btn-primary" id="forgotPasswordBtn">
+                                <span id="forgotPasswordBtnText">Verify Account</span>
+                                <div class="spinner-border spinner-border-sm text-light d-none" id="forgotPasswordSpinner"></div>
+                            </button>
+                        </div>
+                        <div class="text-center">
+                            <p>Remember your password? <a href="#" id="backToLoginLink">Back to Login</a></p>
+                        </div>
+                    </form>
+                    <div class="alert-placeholder" id="forgotPasswordAlertPlaceholder"></div>
+                </div>
+            </div>
+
+            <div class="auth-card d-none" id="resetPasswordCard">
+                <div class="auth-header">
+                    <h2>Create New Password</h2>
+                    <p>Enter and confirm your new password</p>
+                </div>
+                <div class="auth-body">
+                    <form id="resetPasswordForm">
+                        <input type="hidden" id="resetToken">
+                        <div class="mb-3 password-container">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" placeholder="Enter new password" required>
+                            <span class="password-toggle" id="toggleNewPassword"><i class="fas fa-eye"></i></span>
+                            <div class="password-requirements">Must be at least 8 characters with uppercase, lowercase, number, and symbol</div>
+                        </div>
+                        <div class="mb-3 password-container">
+                            <label for="confirmPassword" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm new password" required>
+                            <span class="password-toggle" id="toggleConfirmPassword"><i class="fas fa-eye"></i></span>
+                        </div>
+                        <div class="d-grid gap-2 mb-3">
+                            <button type="submit" class="btn btn-primary" id="resetPasswordBtnConfirm"> <span id="resetPasswordBtnText">Reset Password</span>
+                                <div class="spinner-border spinner-border-sm text-light d-none" id="resetPasswordSpinner"></div>
+                            </button>
+                        </div>
+                    </form>
+                    <div class="alert-placeholder" id="resetPasswordAlertPlaceholder"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p class="mb-0">&copy; 2025 All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // DOM Elements
+        const loginCard = document.getElementById('loginCard');
+        const otpCard = document.getElementById('otpCard');
+        const forgotPasswordCard = document.getElementById('forgotPasswordCard');
+        const resetPasswordCard = document.getElementById('resetPasswordCard');
+        
+        // Forms
+        const loginForm = document.getElementById('loginForm');
+        const otpForm = document.getElementById('otpForm');
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+        const resetPasswordForm = document.getElementById('resetPasswordForm');
+        
+        // Links
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const backToLoginLink = document.getElementById('backToLoginLink');
+        const resendOtpLink = document.getElementById('resendOtpLink');
+        
+        // Password Toggles
+        const togglePassword = document.getElementById('togglePassword');
+        const toggleNewPassword = document.getElementById('toggleNewPassword');
+        const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+        
+        // OTP Inputs
+        const otpInputs = otpCard.querySelectorAll('.otp-input'); // Scoped to otpCard
+        const otpCode = document.getElementById('otpCode');
+
+        // Alert Placeholders
+        const loginAlertPlaceholder = document.getElementById('loginAlertPlaceholder');
+        const otpAlertPlaceholder = document.getElementById('otpAlertPlaceholder');
+        const forgotPasswordAlertPlaceholder = document.getElementById('forgotPasswordAlertPlaceholder');
+        const resetPasswordAlertPlaceholder = document.getElementById('resetPasswordAlertPlaceholder');
+
+        // Current visible card's alert placeholder
+        let currentAlertPlaceholder = loginAlertPlaceholder; 
+        
+        // Check for reset token in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        
+        if (token) {
+            showResetPasswordCard(token);
+        }
+        
+        // Event Listeners
+        forgotPasswordLink.addEventListener('click', (e) => { e.preventDefault(); showForgotPasswordCard(); });
+        backToLoginLink.addEventListener('click', (e) => { e.preventDefault(); showLoginCard(); });
+        resendOtpLink.addEventListener('click', resendOtp);
+        
+        if(togglePassword) togglePassword.addEventListener('click', function() { togglePasswordVisibility('password', 'togglePassword'); });
+        if(toggleNewPassword) toggleNewPassword.addEventListener('click', function() { togglePasswordVisibility('newPassword', 'toggleNewPassword'); });
+        if(toggleConfirmPassword) toggleConfirmPassword.addEventListener('click', function() { togglePasswordVisibility('confirmPassword', 'toggleConfirmPassword'); });
+        
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, ''); // Allow only numbers
+                if (this.value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+                updateOtpCode();
+            });
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+                // Call updateOtpCode after a slight delay to ensure value is processed
+                setTimeout(updateOtpCode, 0);
+            });
+             input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pasteData = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+                if (pasteData.length === otpInputs.length) {
+                    otpInputs.forEach((box, i) => {
+                        box.value = pasteData[i] || '';
+                    });
+                    updateOtpCode();
+                    otpInputs[otpInputs.length - 1].focus(); // Focus on the last input
+                } else if (pasteData.length > 0) {
+                    // Distribute pasted digits among inputs starting from current
+                    let currentPastedIndex = 0;
+                    for (let i = index; i < otpInputs.length && currentPastedIndex < pasteData.length; i++) {
+                        otpInputs[i].value = pasteData[currentPastedIndex++];
+                        if (i < otpInputs.length - 1 && currentPastedIndex < pasteData.length) {
+                            otpInputs[i+1].focus();
+                        } else if (i === otpInputs.length -1 || currentPastedIndex === pasteData.length) {
+                             otpInputs[i].focus();
+                        }
+                    }
+                    updateOtpCode();
+                }
+            });
+        });
+        
+        if(loginForm) loginForm.addEventListener('submit', handleLogin);
+        if(otpForm) otpForm.addEventListener('submit', handleOtpVerification);
+        if(forgotPasswordForm) forgotPasswordForm.addEventListener('submit', handleForgotPassword);
+        if(resetPasswordForm) resetPasswordForm.addEventListener('submit', handleResetPassword);
+        
+        function togglePasswordVisibility(fieldId, toggleId) {
+            const passwordField = document.getElementById(fieldId);
+            const toggleIcon = document.querySelector(`#${toggleId} i`);
+            if (!passwordField || !toggleIcon) return;
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+        
+        function updateOtpCode() {
+            let code = '';
+            otpInputs.forEach(input => { code += input.value; });
+            if(otpCode) otpCode.value = code;
+        }
+
+        function clearAlerts() {
+            loginAlertPlaceholder.innerHTML = '';
+            otpAlertPlaceholder.innerHTML = '';
+            forgotPasswordAlertPlaceholder.innerHTML = '';
+            resetPasswordAlertPlaceholder.innerHTML = '';
+        }
+        
+        function showAlert(message, type, placeholder = currentAlertPlaceholder) {
+            clearAlerts(); // Clear previous alerts from all placeholders
+            placeholder.innerHTML = ''; // Clear current placeholder
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `status-message ${type}`; // type will be 'success', 'error', or 'info'
+            alertDiv.textContent = message;
+            placeholder.appendChild(alertDiv);
+            
+            if (type === 'success' || type === 'info') { // Auto dismiss info as well
+                setTimeout(() => {
+                    if (alertDiv.parentNode === placeholder) { // Check if it's still our alert
+                         placeholder.innerHTML = '';
+                    }
+                }, 5000);
+            }
+        }
+        
+        function toggleButtonLoading(buttonId, spinnerId, textId, isLoading, loadingText = "Processing...") {
+            const button = document.getElementById(buttonId);
+            const textSpan = document.getElementById(textId);
+            // Spinners are visually hidden by CSS to match the target theme.
+            // This function will primarily handle disabled state and text.
+            if (!button || !textSpan) return;
+
+            const originalText = textSpan.dataset.originalText || textSpan.textContent;
+            if (!textSpan.dataset.originalText) {
+                 textSpan.dataset.originalText = originalText;
+            }
+
+            if (isLoading) {
+                button.disabled = true;
+                textSpan.textContent = loadingText;
+            } else {
+                button.disabled = false;
+                textSpan.textContent = originalText; // Restore original text
+            }
+        }
+        
+        function showLoginCard() {
+            loginCard.classList.remove('d-none');
+            otpCard.classList.add('d-none');
+            forgotPasswordCard.classList.add('d-none');
+            resetPasswordCard.classList.add('d-none');
+            currentAlertPlaceholder = loginAlertPlaceholder;
+            clearAlerts();
+            window.history.pushState({}, '', 'login.html');
+        }
+        
+        function showOtpCard() {
+            loginCard.classList.add('d-none');
+            otpCard.classList.remove('d-none');
+            forgotPasswordCard.classList.add('d-none');
+            resetPasswordCard.classList.add('d-none');
+            currentAlertPlaceholder = otpAlertPlaceholder;
+            clearAlerts();
+            startOtpTimer();
+            otpInputs[0].focus();
+        }
+        
+        function showForgotPasswordCard() {
+            loginCard.classList.add('d-none');
+            otpCard.classList.add('d-none');
+            forgotPasswordCard.classList.remove('d-none');
+            resetPasswordCard.classList.add('d-none');
+            currentAlertPlaceholder = forgotPasswordAlertPlaceholder;
+            clearAlerts();
+            window.history.pushState({}, '', 'login.html?action=forgot');
+        }
+        
+        function showResetPasswordCard(tokenParam) {
+            loginCard.classList.add('d-none');
+            otpCard.classList.add('d-none');
+            forgotPasswordCard.classList.add('d-none');
+            resetPasswordCard.classList.remove('d-none');
+            currentAlertPlaceholder = resetPasswordAlertPlaceholder;
+            clearAlerts();
+            const resetTokenInput = document.getElementById('resetToken');
+            if(resetTokenInput) resetTokenInput.value = tokenParam;
+            window.history.pushState({}, '', 'login.html?token=' + tokenParam);
+        }
+        
+        let otpTimerInterval;
+        function startOtpTimer() {
+            clearInterval(otpTimerInterval); // Clear existing timer
+            const countdownElement = document.getElementById('otpCountdown');
+            if(!countdownElement) return;
+
+            let timeLeft = 120; // 2 minutes in seconds
+            countdownElement.style.color = 'var(--primary-gold)'; // Reset color
+            
+            otpTimerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(otpTimerInterval);
+                    countdownElement.textContent = 'OTP expired';
+                    countdownElement.style.color = '#ff9999'; // Error color
+                    // Optionally disable verify button or enable resend
+                    document.getElementById('verifyOtpBtn').disabled = true;
+                    document.getElementById('resendOtpLink').style.pointerEvents = 'auto';
+                    document.getElementById('resendOtpLink').style.opacity = '1';
+
+                } else {
+                    timeLeft--;
+                    document.getElementById('verifyOtpBtn').disabled = false;
+                    document.getElementById('resendOtpLink').style.pointerEvents = 'none';
+                    document.getElementById('resendOtpLink').style.opacity = '0.5';
+                }
+            }, 1000);
+        }
+        
+        function resendOtp(e) {
+            if(e) e.preventDefault();
+            // In a real app, this would call your API to resend OTP
+            showAlert('New OTP has been sent.', 'success'); // Use 'info' or 'success'
+            startOtpTimer(); // Restart timer
+        }
+        
+        // Form Handlers (Simulated API calls)
+        async function handleLogin(e) {
+            e.preventDefault();
+            toggleButtonLoading('loginBtn', 'loginSpinner', 'loginBtnText', true, "Logging in...");
+            
+            const loginId = document.getElementById('loginId').value;
+            const password = document.getElementById('password').value;
+            
+            if (!loginId || !password) {
+                showAlert('Please fill in all fields', 'error');
+                toggleButtonLoading('loginBtn', 'loginSpinner', 'loginBtnText', false);
+                return;
+            }
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Mock response logic
+                const requiresOtp = true; // Simulate OTP requirement
+                if (loginId === "user@example.com" && password === "Password123!") { // Mock successful login
+                    if (requiresOtp) {
+                        showAlert('Login successful. OTP sent to your registered device.', 'info');
+                        showOtpCard();
+                    } else {
+                        showAlert('Login successful! Redirecting...', 'success');
+                        // window.location.href = 'dashboard.html'; 
+                    }
+                } else {
+                     showAlert('Invalid credentials or user not found.', 'error');
+                }
+                toggleButtonLoading('loginBtn', 'loginSpinner', 'loginBtnText', false);
+            }, 1500);
+        }
+        
+        async function handleOtpVerification(e) {
+            e.preventDefault();
+            toggleButtonLoading('verifyOtpBtn', 'verifyOtpSpinner', 'verifyOtpBtnText', true, "Verifying OTP...");
+            
+            const currentOtp = otpCode.value;
+            
+            if (currentOtp.length !== 6) {
+                showAlert('Please enter a valid 6-digit OTP', 'error');
+                toggleButtonLoading('verifyOtpBtn', 'verifyOtpSpinner', 'verifyOtpBtnText', false);
+                return;
+            }
+            
+            // Simulate API call
+            setTimeout(() => {
+                if (currentOtp === "123456") { // Mock successful OTP
+                    showAlert('OTP verified successfully! Redirecting...', 'success');
+                    // window.location.href = 'dashboard.html';
+                    clearInterval(otpTimerInterval); // Stop timer on success
+                } else {
+                    showAlert('Invalid OTP. Please try again.', 'error');
+                    otpInputs.forEach(input => input.value = ''); // Clear inputs
+                    otpInputs[0].focus();
+                }
+                toggleButtonLoading('verifyOtpBtn', 'verifyOtpSpinner', 'verifyOtpBtnText', false);
+            }, 1500);
+        }
+        
+        async function handleForgotPassword(e) {
+            e.preventDefault();
+            toggleButtonLoading('forgotPasswordBtn', 'forgotPasswordSpinner', 'forgotPasswordBtnText', true, "Verifying...");
+            
+            const emailVal = document.getElementById('email').value;
+            const phoneVal = document.getElementById('phone').value;
+            
+            if (!emailVal || !phoneVal) {
+                showAlert('Please provide both email and phone number', 'error');
+                toggleButtonLoading('forgotPasswordBtn', 'forgotPasswordSpinner', 'forgotPasswordBtnText', false);
+                return;
+            }
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Mock logic: Assume account found and OTP/link is sent
+                showAlert('If your account exists, an OTP/reset link has been sent.', 'success');
+                // Depending on flow, could show OTP card or redirect/inform about email
+                // For this demo, let's assume it goes to OTP for verification before reset
+                // showOtpCard(); // Or, if it sends a link, then:
+                showLoginCard(); 
+                showAlert('Password reset instructions sent to your email.', 'success', loginAlertPlaceholder);
+
+
+                toggleButtonLoading('forgotPasswordBtn', 'forgotPasswordSpinner', 'forgotPasswordBtnText', false);
+            }, 1500);
+        }
+        
+        async function handleResetPassword(e) {
+            e.preventDefault();
+            const resetBtnId = 'resetPasswordBtnConfirm'; // ID of the actual button
+            toggleButtonLoading(resetBtnId, 'resetPasswordSpinner', 'resetPasswordBtnText', true, "Resetting...");
+            
+            const tokenVal = document.getElementById('resetToken').value;
+            const newPasswordVal = document.getElementById('newPassword').value;
+            const confirmPasswordVal = document.getElementById('confirmPassword').value;
+            
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{8,}$/;
+            if (!passwordRegex.test(newPasswordVal)) {
+                showAlert('Password: 8+ chars, upper, lower, number, symbol (@$!%*?&._-)', 'error');
+                toggleButtonLoading(resetBtnId, 'resetPasswordSpinner', 'resetPasswordBtnText', false);
+                return;
+            }
+            if (newPasswordVal !== confirmPasswordVal) {
+                showAlert('Passwords do not match', 'error');
+                toggleButtonLoading(resetBtnId, 'resetPasswordSpinner', 'resetPasswordBtnText', false);
+                return;
+            }
+            
+            // Simulate API call
+            setTimeout(() => {
+                 // Mock success
+                showAlert('Password has been reset successfully! You can now login.', 'success');
+                showLoginCard();
+                showAlert('Password reset successfully. Please login.', 'success', loginAlertPlaceholder);
+
+                toggleButtonLoading(resetBtnId, 'resetPasswordSpinner', 'resetPasswordBtnText', false);
+            }, 1500);
+        }
+
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bikers United - Member Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a2b3c;
+            --secondary: #e63946;
+            --accent: #457b9d;
+            --light: #f1faee;
+            --dark: #1d3557;
+            --success: #2a9d8f;
+            --warning: #f4a261;
+            --info: #457b9d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, var(--primary) 0%, var(--dark) 100%);
+            color: white;
+            padding: 25px;
+            position: relative;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .profile {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .profile-img {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--secondary);
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .profile-name {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .profile-username {
+            color: #adb5bd;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .profile-bio {
+            font-size: 0.9rem;
+            color: #dee2e6;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .profile-details {
+            margin-top: 20px;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        
+        .profile-detail {
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .detail-label {
+            color: #adb5bd;
+            display: flex;
+            align-items: center;
+        }
+        
+        .detail-label i {
+            margin-right: 8px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .detail-value {
+            font-weight: 500;
+            text-align: right;
+        }
+        
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+        
+        .points-badge {
+            background-color: var(--secondary);
+            color: white;
+            margin-top: 10px;
+        }
+        
+        .status-badge {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .warning-badge {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .emergency-contact {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: rgba(0,0,0,0.15);
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .section-title {
+            color: var(--light);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+        }
+        
+        .main-content {
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .welcome-text h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .welcome-text p {
+            opacity: 0.9;
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            background-color: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background-color: rgba(255,255,255,0.3);
+        }
+        
+        .action-btn i {
+            margin-right: 8px;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .dashboard-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .card-action-btn {
+            background: none;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .notice-board {
+            grid-column: span 2;
+        }
+        
+        .notice-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .notice-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .notice-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .notice-priority {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .priority-high {
+            background-color: var(--secondary);
+        }
+        
+        .priority-medium {
+            background-color: var(--warning);
+        }
+        
+        .priority-low {
+            background-color: var(--success);
+        }
+        
+        .notice-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .notice-date {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .notice-author {
+            font-size: 0.8rem;
+            color: var(--accent);
+        }
+        
+        .cause-item {
+            margin-bottom: 20px;
+        }
+        
+        .cause-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .cause-title {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .cause-reason {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .cause-progress {
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--success) 100%);
+            border-radius: 4px;
+        }
+        
+        .cause-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        
+        .cause-target {
+            display: flex;
+            align-items: center;
+        }
+        
+        .cause-target i {
+            margin-right: 5px;
+        }
+        
+        .contribute-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        
+        .contribute-btn:hover {
+            background-color: var(--dark);
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .leaderboard-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .leaderboard-position {
+            font-weight: 600;
+            color: var(--primary);
+            width: 25px;
+        }
+        
+        .leaderboard-user {
+            flex: 1;
+            margin-left: 15px;
+        }
+        
+        .leaderboard-name {
+            font-weight: 500;
+        }
+        
+        .leaderboard-you {
+            color: var(--accent);
+            font-size: 0.8rem;
+        }
+        
+        .leaderboard-points {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+        
+        .trusted-place {
+            display: flex;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .trusted-place:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .place-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--primary);
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        
+        .place-details {
+            flex: 1;
+        }
+        
+        .place-name {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .place-services {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        
+        .place-contact {
+            font-size: 0.85rem;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+        
+        .place-distance {
+            font-size: 0.8rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+        }
+        
+        .place-distance i {
+            margin-right: 5px;
+        }
+        
+        .mini-map {
+            height: 120px;
+            background-color: #e9ecef;
+            border-radius: 6px;
+            margin-top: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .mini-map img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .map-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 8px;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        
+        .project-card {
+            position: relative;
+            overflow: hidden;
+            height: 200px;
+            border-radius: 10px;
+        }
+        
+        .project-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .project-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 15px;
+            color: white;
+        }
+        
+        .project-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .project-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .project-progress {
+            height: 6px;
+            background-color: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            margin-bottom: 10px;
+        }
+        
+        .project-progress-bar {
+            height: 100%;
+            background-color: var(--success);
+            border-radius: 3px;
+        }
+        
+        .project-action {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .project-members {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+        
+        .project-members i {
+            margin-right: 5px;
+        }
+        
+        .project-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        
+        .mcc-payment {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .mcc-info {
+            flex: 1;
+        }
+        
+        .mcc-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        
+        .mcc-amount {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .mcc-due {
+            font-size: 0.85rem;
+        }
+        
+        .pay-btn {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        
+        .pay-btn:hover {
+            background-color: #218838;
+        }
+        
+        .edit-btn {
+            background: none;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .edit-btn i {
+            margin-right: 5px;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            bottom: 25px;
+            left: 25px;
+            right: 25px;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+        }
+        
+        .logout-btn i {
+            margin-right: 8px;
+        }
+        
+        .logout-btn:hover {
+            background-color: #c1121f;
+        }
+        
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .notice-board {
+                grid-column: span 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+                padding-bottom: 80px;
+            }
+            
+            .logout-btn {
+                position: static;
+                margin-top: 20px;
+                width: 100%;
+            }
+            
+            .welcome-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .quick-actions {
+                margin-top: 15px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="profile">
+                <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Profile Photo" class="profile-img">
+                <h3 class="profile-name">John Mwangi</h3>
+                <div class="profile-username">@j_mwangi</div>
+                <div class="profile-bio">Passionate rider since 2015. Love long distance touring and bike customization.</div>
+                <div class="badge points-badge">1,850 Points <i class="fas fa-trophy"></i></div>
+                
+                <div class="profile-details">
+                    <div class="profile-detail">
+                        <span class="detail-label"><i class="fas fa-id-card"></i> ID Number:</span>
+                        <span class="detail-value">12345678</span>
+                    </div>
+                    <div class="profile-detail">
+                        <span class="detail-label"><i class="fas fa-id-badge"></i> Association No:</span>
+                        <span class="detail-value">MCA-2023-0456</span>
+                    </div>
+                    <div class="profile-detail">
+                        <span class="detail-label"><i class="fas fa-phone"></i> Phone:</span>
+                        <span class="detail-value">+254 712 345 678</span>
+                    </div>
+                    <div class="profile-detail">
+                        <span class="detail-label"><i class="fas fa-map-marker-alt"></i> Area:</span>
+                        <span class="detail-value">Nairobi West</span>
+                    </div>
+                    <div class="profile-detail">
+                        <span class="detail-label"><i class="fas fa-motorcycle"></i> Bike Plate:</span>
+                        <span class="detail-value">KBR 456H</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mcc-payment">
+                <div class="mcc-info">
+                    <div class="mcc-label">MCC Balance</div>
+                    <div class="mcc-amount">Ksh. 8,750</div>
+                    <div class="mcc-due">Due in 15 days</div>
+                </div>
+                <button class="pay-btn">Pay Now</button>
+            </div>
+            
+            <div class="emergency-contact">
+                <h4 class="section-title"><i class="fas fa-exclamation-triangle"></i> Emergency Contacts</h4>
+                <div class="profile-details">
+                    <div class="profile-detail">
+                        <span class="detail-label"><i class="fas fa-user"></i> Next of Kin:</span>
+                        <span class="detail-value">Mary Wanjiku</span>
+                    </div>
+                    <div class="profile-detail">
+                        <span class="detail-label"><i class="fas fa-heart"></i> Relationship:</span>
+                        <span class="detail-value">Spouse</span>
+                    </div>
+                    <div class="profile-detail">
+                        <span class="detail-label"><i class="fas fa-phone"></i> Phone:</span>
+                        <span class="detail-value">+254 712 345 678</span>
+                    </div>
+                    <div class="profile-detail">
+                        <span class="detail-label"><i class="fas fa-phone-alt"></i> Alt. Contact:</span>
+                        <span class="detail-value">+254 723 456 789</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+        
+        <div class="main-content">
+            <div class="welcome-banner">
+                <div class="welcome-text">
+                    <h1>Welcome back, John!</h1>
+                    <p>Your last login was today at 08:45 AM from Nairobi</p>
+                </div>
+                <div class="quick-actions">
+                    <button class="action-btn"><i class="fas fa-bell"></i> Alerts</button>
+                    <button class="action-btn"><i class="fas fa-cog"></i> Settings</button>
+                    <button class="action-btn"><i class="fas fa-question-circle"></i> Help</button>
+                </div>
+            </div>
+            
+            <div class="dashboard-grid">
+                <div class="dashboard-card notice-board">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-bullhorn"></i> Notice Board</h2>
+                        <div class="card-actions">
+                            <button class="card-action-btn"><i class="fas fa-search"></i></button>
+                            <button class="card-action-btn"><i class="fas fa-filter"></i></button>
+                        </div>
+                    </div>
+                    <div class="notice-item">
+                        <div class="notice-meta">
+                            <span class="notice-date"><i class="far fa-calendar-alt"></i> May 15, 2023</span>
+                            <span class="notice-author">Posted by Admin</span>
+                        </div>
+                        <h3 class="notice-title"><span class="notice-priority priority-high"></span>Emergency Route Change for Weekend Ride</h3>
+                        <p>Due to road construction on Mombasa Road, we're changing our route for this Saturday's ride. New meeting point is at Shell Karen at 7:30am.</p>
+                    </div>
+                    <div class="notice-item">
+                        <div class="notice-meta">
+                            <span class="notice-date"><i class="far fa-calendar-alt"></i> May 10, 2023</span>
+                            <span class="notice-author">Posted by Safety Committee</span>
+                        </div>
+                        <h3 class="notice-title"><span class="notice-priority priority-medium"></span>New Safety Gear Requirements</h3>
+                        <p>Starting June 1st, all riders must have reflective jackets for night rides. Discounts available through our partners.</p>
+                    </div>
+                    <div class="notice-item">
+                        <div class="notice-meta">
+                            <span class="notice-date"><i class="far fa-calendar-alt"></i> May 5, 2023</span>
+                            <span class="notice-author">Posted by Treasurer</span>
+                        </div>
+                        <h3 class="notice-title"><span class="notice-priority priority-low"></span>Membership Renewal Reminder</h3>
+                        <p>Annual membership renewals are due by June 30th. Early birds get 10% discount if paid before June 15th.</p>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-hands-helping"></i> Causes & Contributions</h2>
+                        <button class="edit-btn"><i class="fas fa-plus"></i> New</button>
+                    </div>
+                    <div class="cause-item">
+                        <div class="cause-header">
+                            <h3 class="cause-title">Biker Down Support Fund</h3>
+                            <span class="badge status-badge">Active</span>
+                        </div>
+                        <p class="cause-reason">Supporting our member James who had an accident last month</p>
+                        <div class="cause-progress">
+                            <div class="progress-bar" style="width: 65%;"></div>
+                        </div>
+                        <div class="cause-stats">
+                            <div class="cause-target"><i class="fas fa-users"></i> 87 contributed</div>
+                            <div>Ksh. 195,000 / 300,000</div>
+                        </div>
+                        <button class="contribute-btn"><i class="fas fa-donate"></i> Contribute Now</button>
+                    </div>
+                    <div class="cause-item">
+                        <div class="cause-header">
+                            <h3 class="cause-title">Annual Charity Ride</h3>
+                            <span class="badge status-badge">Active</span>
+                        </div>
+                        <p class="cause-reason">Raising funds for children's home in Nakuru</p>
+                        <div class="cause-progress">
+                            <div class="progress-bar" style="width: 42%;"></div>
+                        </div>
+                        <div class="cause-stats">
+                            <div class="cause-target"><i class="fas fa-users"></i> 64 contributed</div>
+                            <div>Ksh. 126,000 / 300,000</div>
+                        </div>
+                        <button class="contribute-btn"><i class="fas fa-donate"></i> Contribute Now</button>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-trophy"></i> Leaderboard</h2>
+                        <button class="edit-btn"><i class="fas fa-info-circle"></i> Info</button>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div class="leaderboard-position">1</div>
+                        <div class="leaderboard-user">
+                            <div class="leaderboard-name">James Kamau</div>
+                            <div class="leaderboard-you">Ride Captain</div>
+                        </div>
+                        <div class="leaderboard-points">2,750 <i class="fas fa-star"></i></div>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div class="leaderboard-position">2</div>
+                        <div class="leaderboard-user">
+                            <div class="leaderboard-name">Sarah Wambui</div>
+                            <div class="leaderboard-you">Safety Officer</div>
+                        </div>
+                        <div class="leaderboard-points">2,420 <i class="fas fa-star"></i></div>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div class="leaderboard-position">3</div>
+                        <div class="leaderboard-user">
+                            <div class="leaderboard-name">Peter Maina</div>
+                            <div class="leaderboard-you">Events Coordinator</div>
+                        </div>
+                        <div class="leaderboard-points">2,150 <i class="fas fa-star"></i></div>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div class="leaderboard-position">4</div>
+                        <div class="leaderboard-user">
+                            <div class="leaderboard-name">David Ochieng</div>
+                        </div>
+                        <div class="leaderboard-points">1,950 <i class="fas fa-star"></i></div>
+                    </div>
+                    <div class="leaderboard-item" style="background-color: rgba(69, 123, 157, 0.1);">
+                        <div class="leaderboard-position">5</div>
+                        <div class="leaderboard-user">
+                            <div class="leaderboard-name">John Mwangi</div>
+                            <div class="leaderboard-you">You</div>
+                        </div>
+                        <div class="leaderboard-points">1,850 <i class="fas fa-star"></i></div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-map-marked-alt"></i> Trusted Places</h2>
+                        <button class="edit-btn"><i class="fas fa-map"></i> View All</button>
+                    </div>
+                    <div class="trusted-place">
+                        <div class="place-icon"><i class="fas fa-biking"></i></div>
+                        <div class="place-details">
+                            <div class="place-name">Bikers Garage & Workshop</div>
+                            <div class="place-services">Repairs, Parts, Customization</div>
+                            <div class="place-contact"><i class="fas fa-phone"></i> 0722 111 222</div>
+                            <div class="place-distance"><i class="fas fa-location-arrow"></i> 2.5 km away - Ngong Road</div>
+                            <div class="mini-map">
+                                <img src="https://maps.googleapis.com/maps/api/staticmap?center=-1.3041,36.8154&zoom=15&size=600x300&maptype=roadmap&markers=color:red%7C-1.3041,36.8154&key=YOUR_API_KEY" alt="Map">
+                                <div class="map-overlay">Click to view directions</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="trusted-place">
+                        <div class="place-icon"><i class="fas fa-gas-pump"></i></div>
+                        <div class="place-details">
+                            <div class="place-name">Shell Petrol Station (Karen)</div>
+                            <div class="place-services">Fuel, Air Pump, Convenience Store</div>
+                            <div class="place-contact"><i class="fas fa-phone"></i> 0723 333 444</div>
+                            <div class="place-distance"><i class="fas fa-location-arrow"></i> 5.1 km away - Karen Road</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card project-card">
+                    <img src="https://images.unsplash.com/photo-1518604666860-9ed391f76460?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Bus Project" class="project-image">
+                    <div class="project-overlay">
+                        <h3 class="project-title">Member Transport Bus Project</h3>
+                        <div class="project-stats">
+                            <span>150 members participating</span>
+                            <span>Ksh. 3.75M / 7.5M</span>
+                        </div>
+                        <div class="project-progress">
+                            <div class="project-progress-bar" style="width: 50%;"></div>
+                        </div>
+                        <div class="project-action">
+                            <div class="project-members"><i class="fas fa-users"></i> 150/300 target</div>
+                            <button class="project-btn">Join Project</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-first-aid"></i> Emergency Services</h2>
+                        <button class="edit-btn"><i class="fas fa-plus"></i> Add</button>
+                    </div>
+                    <div class="trusted-place">
+                        <div class="place-icon"><i class="fas fa-hospital"></i></div>
+                        <div class="place-details">
+                            <div class="place-name">Nairobi West Hospital</div>
+                            <div class="place-services">Emergency, Trauma Center</div>
+                            <div class="place-contact"><i class="fas fa-phone"></i> 0733 555 666 (Emergency)</div>
+                            <div class="place-distance"><i class="fas fa-location-arrow"></i> 4.2 km away</div>
+                        </div>
+                    </div>
+                    <div class="trusted-place">
+                        <div class="place-icon"><i class="fas fa-ambulance"></i></div>
+                        <div class="place-details">
+                            <div class="place-name">Bikers Emergency Response</div>
+                            <div class="place-services">24/7 Rider Assistance</div>
+                            <div class="place-contact"><i class="fas fa-phone"></i> 0700 222 333 (Toll-free)</div>
+                            <div class="place-distance"><i class="fas fa-location-arrow"></i> Nationwide</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
